@@ -2,6 +2,7 @@ swd-ros2-controllers (2.1.0) unstable; urgency=medium
 
   * Fix the apt-key deprecation error
   * Support two levels of SLS
+    NOTA : swd_ros2_controllers::SafetyFunctions has been changed. There is no compatibility with older versions.
   * Fix launch.py : add output='screen'
   * Update README.md : fix sources.list + add SWD-125 product + remove commissioning_12pts + fix Ubuntu version
   * Add depend.sh
