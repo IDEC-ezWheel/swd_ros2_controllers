@@ -5,7 +5,7 @@
   <version>2.1.0</version>
   <description>Package that interacts with ez-Wheel's SWD DBus services to control 2 wheels for a differential-drive robot.</description>
 
-  <maintainer email="g.mermet@ez-wheel.com">Gregory MERMET</maintainer>
+  <maintainer email="gregory.mermet@idec.com">Gregory MERMET</maintainer>
 
   <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
   <license>LGPLv2.1</license>
