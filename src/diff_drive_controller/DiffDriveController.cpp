@@ -548,12 +548,106 @@ namespace ezw::swd {
         double left_vel, right_vel;
 
         // Control model (diff drive)
-        left_vel = (2. * p_cmd_vel->linear.x - p_cmd_vel->angular.z * m_params->getBaseline()) / m_left_wheel_diameter_m;
-        right_vel = (2. * p_cmd_vel->linear.x + p_cmd_vel->angular.z * m_params->getBaseline()) / m_right_wheel_diameter_m;
+        // Target wheel speed (rad/s) from linear command
+        double left_vel_from_linear = (2.0 * p_cmd_vel->linear.x) / m_left_wheel_diameter_m;
+        double right_vel_from_linear = (2.0 * p_cmd_vel->linear.x) / m_right_wheel_diameter_m;
+
+        // Target wheel speed (rad/s) from angular command
+        double left_vel_from_angular = -(p_cmd_vel->angular.z * m_params->getBaseline()) / m_left_wheel_diameter_m;
+        double right_vel_from_angular = (p_cmd_vel->angular.z * m_params->getBaseline()) / m_right_wheel_diameter_m;
+
+        // Max wheel speed (rad/s)
+        double left_max_rad_s = (m_params->getMotorMaxSpeedRpm() * 2.0 * M_PI) / (60.0 * m_l_motor_reduction);
+        double right_max_rad_s = (m_params->getMotorMaxSpeedRpm() * 2.0 * M_PI) / (60.0 * m_r_motor_reduction);
+
+        // Limit angular speed to max motor speed
+        if (left_vel_from_angular > left_max_rad_s) {
+            RCLCPP_INFO(get_logger(), "Limit left angular speed from %f to %f rad/s", left_vel_from_angular, left_max_rad_s);
+            left_vel_from_angular = left_max_rad_s;
+        }
+        else if (left_vel_from_angular < -left_max_rad_s) {
+            RCLCPP_INFO(get_logger(), "Limit left angular speed from %f to %f rad/s", left_vel_from_angular, -left_max_rad_s);
+            left_vel_from_angular = -left_max_rad_s;
+        }
+
+        if (right_vel_from_angular > right_max_rad_s) {
+            RCLCPP_INFO(get_logger(), "Limit right angular speed from %f to %f rad/s", right_vel_from_angular, right_max_rad_s);
+            right_vel_from_angular = right_max_rad_s;
+        }
+        else if (right_vel_from_angular < -right_max_rad_s) {
+            RCLCPP_INFO(get_logger(), "Limit right angular speed from %f to %f rad/s", right_vel_from_angular, -right_max_rad_s);
+            right_vel_from_angular = -right_max_rad_s;
+        }
+
+        // Compute wheel speed
+        left_vel = left_vel_from_linear + left_vel_from_angular;
+        right_vel = right_vel_from_linear + right_vel_from_angular;
+
+        // Check motor saturation (linear + angular > max)
+        double saturation_left = 0.0;
+        double saturation_right = 0.0;
+
+        if (left_vel > left_max_rad_s)
+            saturation_left = left_vel - left_max_rad_s;  // ex 500
+        else if (left_vel < -left_max_rad_s)
+            saturation_left = left_vel + left_max_rad_s;  // ex -500
+
+        if (right_vel > right_max_rad_s)
+            saturation_right = right_vel - right_max_rad_s;
+        else if (right_vel < -right_max_rad_s)
+            saturation_right = right_vel + right_max_rad_s;
+
+        // Compute saturation
+        double saturation = 0.0;
+
+        if (abs(saturation_left) > abs(saturation_right))
+            saturation = saturation_left;
+        else
+            saturation = saturation_right;
+
+        auto lv = left_vel;
+        auto rv = right_vel;
+
+        // Apply saturation: prioritize angular over linear
+        if (left_vel > 0.0)
+            left_vel -= abs(saturation);
+        else
+            left_vel += abs(saturation);
+
+        if (right_vel > 0.0)
+            right_vel -= abs(saturation);
+        else
+            right_vel += abs(saturation);
+
+        if (abs(saturation_left) > 0.001) {
+            RCLCPP_INFO(get_logger(), "Left speed saturation : %f rad/s", saturation_left);
+        }
+
+        if (abs(saturation_right) > 0.001) {
+            RCLCPP_INFO(get_logger(), "Right speed saturation : %f rad/s", saturation_right);
+        }
+
+        // left_vel = (2. * p_cmd_vel->linear.x - p_cmd_vel->angular.z * m_baseline_m) / m_left_wheel_diameter_m;
+        // right_vel = (2. * p_cmd_vel->linear.x + p_cmd_vel->angular.z * m_baseline_m) / m_right_wheel_diameter_m;
 
         // Convert rad/s wheel speed to rpm motor speed
         auto left = static_cast<int32_t>(left_vel * m_l_motor_reduction * 60.0 / (2.0 * M_PI));
         auto right = static_cast<int32_t>(right_vel * m_r_motor_reduction * 60.0 / (2.0 * M_PI));
+
+        if (left_vel < lv) {
+            RCLCPP_INFO(get_logger(), "Left speed desired:%f max:%f vel_rad_s:%f vel_rpm:%d", left_vel, left_max_rad_s, lv, left);
+        }
+        if (right_vel < rv) {
+            RCLCPP_INFO(get_logger(), "Right speed desired:%f max:%f vel_rad_s:%f vel_rpm:%d", right_vel, right_max_rad_s, rv, right);
+        }
+
+        // // Control model (diff drive)
+        // left_vel = (2. * p_cmd_vel->linear.x - p_cmd_vel->angular.z * m_params->getBaseline()) / m_left_wheel_diameter_m;
+        // right_vel = (2. * p_cmd_vel->linear.x + p_cmd_vel->angular.z * m_params->getBaseline()) / m_right_wheel_diameter_m;
+
+        // // Convert rad/s wheel speed to rpm motor speed
+        // auto left = static_cast<int32_t>(left_vel * m_l_motor_reduction * 60.0 / (2.0 * M_PI));
+        // auto right = static_cast<int32_t>(right_vel * m_r_motor_reduction * 60.0 / (2.0 * M_PI));
 
 #if VERBOSE_OUTPUT
         RCLCPP_INFO(get_logger(),
