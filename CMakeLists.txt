@@ -114,11 +114,12 @@ ament_target_dependencies(swd_diff_drive_controller
   rclcpp_lifecycle
 )
 
-rosidl_target_interfaces(swd_diff_drive_controller
-  ${PROJECT_NAME} "rosidl_typesupport_cpp")
+# Get typesupport targets
+rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}" "rosidl_typesupport_cpp")
 
 target_link_libraries(
   swd_diff_drive_controller
+  ${cpp_typesupport_target}
   ${EZW_LOG_LIBRARIES}
   ${EZW_SMC_SERVICE_CLIENT_LIBRARIES}
 )
