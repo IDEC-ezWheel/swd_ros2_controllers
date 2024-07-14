@@ -1,3 +1,11 @@
+swd-ros2-controllers (2.2.0) unstable; urgency=medium
+
+  * Fix rosidl_target_interfaces warning
+  * Set subscription queue size to 1
+  * Take into account of motor saturation
+
+ -- Grégory Mermet <gregory.mermet@idec.com>  Mon, 15 Jul 2024 16:41:41 +0200
+
 swd-ros2-controllers (2.1.1) unstable; urgency=medium
 
   * Fix package.xml
