@@ -16,6 +16,7 @@
 
 #define TIMER_STATE_MACHINE_MS 1000ms
 #define TIMER_SAFETY_MS 50ms
+#define RETRY_NB 10
 
 using namespace std::chrono_literals;
 
@@ -121,23 +122,37 @@ namespace ezw::swd {
         }
 
         /* Read initial encoders values */
-        ezw_error_t err_l, err_r;
+        ezw_error_t err_l = ezw_error_t::ERROR_INTERNAL, err_r = ezw_error_t::ERROR_INTERNAL;
+        int attempt = 0;
 
-        if (m_params->getAccurateOdometry()) {
-            err_l = m_left_controller.getAccurateOdometryValueTS(m_dist_left_prev_mm, m_left_timestamp_prev_us);
-            err_r = m_right_controller.getAccurateOdometryValueTS(m_dist_right_prev_mm, m_right_timestamp_prev_us);
-        }
-        else {
-            err_l = m_left_controller.getOdometryValueTS(m_dist_left_prev_mm, m_left_timestamp_prev_us);
-            err_r = m_right_controller.getOdometryValueTS(m_dist_right_prev_mm, m_right_timestamp_prev_us);
-        }
+        while (err_l != ezw_error_t::ERROR_NONE && attempt++ < RETRY_NB) {
+            if (m_params->getAccurateOdometry()) {
+                err_l = m_left_controller.getAccurateOdometryValueTS(m_dist_left_prev_mm, m_left_timestamp_prev_us);
+            }
+            else {
+                err_l = m_left_controller.getOdometryValueTS(m_dist_left_prev_mm, m_left_timestamp_prev_us);
+            }
 
+            usleep((1000) * 1000);
+        }
         if (ERROR_NONE != err_l) {
             RCLCPP_ERROR(get_logger(),
                          "Failed reading from left motor, EZW_ERR: SMCService : "
                          "Controller::%s() return error code : %d",
                          m_params->getAccurateOdometry() ? "getAccurateOdometryValueTS" : "getOdometryValueTS", (int)err_l);
             throw std::runtime_error("Initial reading from left motor failed");
+        }
+
+        attempt = 0;
+        while (err_r != ezw_error_t::ERROR_NONE && attempt++ < RETRY_NB) {
+            if (m_params->getAccurateOdometry()) {
+                err_r = m_right_controller.getAccurateOdometryValueTS(m_dist_right_prev_mm, m_right_timestamp_prev_us);
+            }
+            else {
+                err_r = m_right_controller.getOdometryValueTS(m_dist_right_prev_mm, m_right_timestamp_prev_us);
+            }
+
+            usleep((1000) * 1000);
         }
 
         if (ERROR_NONE != err_r) {
