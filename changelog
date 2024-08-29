@@ -1,3 +1,9 @@
+swd-ros2-controllers (2.2.1) unstable; urgency=medium
+
+  * EZ-208: Add while loop to wait SWD information at startup
+
+ -- Grégory Mermet <gregory.mermet@idec.com>  Thu, 29 Aug 2024 09:42:59 +0000
+
 swd-ros2-controllers (2.2.0) unstable; urgency=medium
 
   * Fix rosidl_target_interfaces warning
