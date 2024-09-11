@@ -21,6 +21,7 @@
 #include "rclcpp_lifecycle/lifecycle_publisher.hpp"
 #include "rcutils/logging_macros.h"
 #include "std_msgs/msg/bool.hpp"
+#include "std_msgs/msg/empty.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "string"
 #include "swd_ros2_controllers/msg/safety_functions.hpp"
@@ -108,6 +109,13 @@ namespace ezw::swd {
         void cbTimerSafety();
 
         /**
+         * @brief Reset the odometry
+         *
+         * @param p_reset_odometry
+         */
+        void cbResetOdometry(std_msgs::msg::Empty::SharedPtr p_reset_odometry);
+
+        /**
          * @brief A safety callback which gets activated if no control message
          * have been received since `control_timeout_ms`
          * 
@@ -121,6 +129,7 @@ namespace ezw::swd {
         rclcpp::Subscription<geometry_msgs::msg::Point>::SharedPtr m_sub_command_set_speed;
         rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr m_sub_command_cmd_vel;
         rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr m_sub_brake;
+        rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr m_sub_reset_odometry;
 
         // TF broadcaster
         std::shared_ptr<tf2_ros::TransformBroadcaster> m_tf2_br;
@@ -130,6 +139,9 @@ namespace ezw::swd {
 
         // Timers
         rclcpp::TimerBase::SharedPtr m_timer_odom, m_timer_watchdog, m_timer_pds, m_timer_safety;
+
+        // Mutex for the odom message
+        std::mutex m_odom_msg_mtx;
 
         // Mutex for the SafetyFunctions message
         std::mutex m_safety_msg_mtx;

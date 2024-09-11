@@ -252,6 +252,7 @@ This controller manages two ez-Wheel SWD® wheels as a differential kinetic robo
 - `/cmd_vel` of type **`geometry_msgs/msg/Twist`**: Target linear and angular velocities.
 - `/set_speed` of type **`geometry_msgs/msg/Point`**: Target speeds in rad/s for left (`Point.x`) and right (`Point.y`) wheels.
 - `/soft_brake` of type **`std_msgs/msg/Bool`**: Activate or release the soft brake, send `false` to release the brake, or `true` to activate it.
+- `/reset_odometry` of type **`std_msgs/msg/Empty`**: Reset the /odom position and orientation to zero.
 
 ### Published Topics
 

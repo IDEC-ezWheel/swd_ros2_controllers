@@ -44,6 +44,7 @@ namespace ezw::swd {
         m_sub_brake = create_subscription<std_msgs::msg::Bool>("soft_brake", 1, std::bind(&DiffDriveController::cbSoftBrake, this, _1));
         m_sub_command_set_speed = create_subscription<geometry_msgs::msg::Point>("set_speed", 1, std::bind(&DiffDriveController::cbSetSpeed, this, _1));
         m_sub_command_cmd_vel = create_subscription<geometry_msgs::msg::Twist>("cmd_vel", 1, std::bind(&DiffDriveController::cbCmdVel, this, _1));
+        m_sub_reset_odometry = create_subscription<std_msgs::msg::Empty>("reset_odometry", 1, std::bind(&DiffDriveController::cbResetOdometry, this, _1));
 
         // Initialize motors
         ezw_error_t err;
@@ -438,6 +439,9 @@ namespace ezw::swd {
             // Values have not changed (avoid "nan" values in /odom topic)
             return;
         }
+
+        // Acquire odom mutex
+        std::lock_guard<std::mutex> lock(m_odom_msg_mtx);
 
         // Encoder difference between t and t-1
         double d_dist_left_m = static_cast<double>(left_dist_now_mm - m_dist_left_prev_mm) / 1000.0;
@@ -1018,6 +1022,25 @@ namespace ezw::swd {
         }
 
         m_first_entry = false;
+    }
+
+    void DiffDriveController::cbResetOdometry(const std_msgs::msg::Empty::SharedPtr p_reset_odometry)
+    {
+        (void)p_reset_odometry;
+
+        // Acquire odom mutex
+        std::lock_guard<std::mutex> lock(m_odom_msg_mtx);
+
+        // Reset odometry position and orientation to zero
+        m_x_prev = 0.0;
+        m_y_prev = 0.0;
+        m_theta_prev = 0.0;
+
+        m_x_prev_err = 0.0;
+        m_y_prev_err = 0.0;
+        m_theta_prev_err = 0.0;
+
+        RCLCPP_INFO(get_logger(), "Odometry reset to (0, 0, 0).");
     }
 
     void DiffDriveController::cbTimerWatchdogReceive()
