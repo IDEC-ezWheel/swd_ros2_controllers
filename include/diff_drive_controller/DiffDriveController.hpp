@@ -25,6 +25,7 @@
 #include "std_msgs/msg/string.hpp"
 #include "string"
 #include "swd_ros2_controllers/msg/safety_functions.hpp"
+#include "swd_ros2_controllers/msg/wheel_odometry.hpp"
 #include "tf2_ros/transform_broadcaster.h"
 #include "thread"
 #include "utility"
@@ -123,6 +124,7 @@ namespace ezw::swd {
         void cbTimerWatchdogReceive();
 
         // Publishers
+        rclcpp::Publisher<swd_ros2_controllers::msg::WheelOdometry>::SharedPtr m_pub_wheel_odometry;
         rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr m_pub_odom;
         rclcpp::Publisher<swd_ros2_controllers::msg::SafetyFunctions>::SharedPtr m_pub_safety;
         // Subscribers

@@ -239,6 +239,7 @@ This controller manages two ez-Wheel SWD® wheels as a differential kinetic robo
 - `publish_odom` of type **`bool`**: Publish odometry messages (default `true`).
 - `publish_tf` of type **`bool`**: Publish TF messages (default `true`).
 - `publish_safety_functions` of type **`bool`**: Publish **`swd_ros2_controllers::msg::SafetyFunctions`** message (default `true`).
+- `publish_wheel_odometry` of type **`bool`**: Publish **`swd_ros2_controllers::msg::WheelOdometry`** message (default `false`).
 - `motor_max_speed_rpm` of type **`int`**: Maximum allowed motor speed (in RPM), if a target speed of one of the motor is above this limit, the controller will limit the speed of the two motor without changing the robot's trajectory (default `1050`).
 - `motor_max_safety_limited_speed_1_rpm` of type **`int`**: Motor safety limited speed 1 (SLS_1) (in RPM), if an SLS_1 signal is detected (from a security LiDAR for example), the motor will be limited internally to the configured SLS_1 limit. The ROS2 controller uses this value to limit the target speed sent to the motor in the SLS_1 case (default `560`).
 - `motor_max_safety_limited_speed_2_rpm` of type **`int`**: Motor safety limited speed 2 (SLS_2) (in RPM), if an SLS_2 signal is detected (from a security LiDAR for example), the motor will be limited internally to the configured SLS_2 limit. The ROS2 controller uses this value to limit the target speed sent to the motor in the SLS_2 case (default `680`).
@@ -258,6 +259,7 @@ This controller manages two ez-Wheel SWD® wheels as a differential kinetic robo
 
 - `/odom` of type **`nav_msgs/msg/Odometry`**: Odometry message based on wheels encoders, containing the pose and velocity of the robot with their's associated uncertainties. Unless disabled by the `publish_tf` parameter, TFs with the same information are also published.
 - `/safety` of type **`swd_ros2_controllers/msg/SafetyFunctions`**: Safety messages communicated by the wheels via CANOpen, the message includes information about Safe Torque Off (STO), Safety Limited Speed (SLS_1/SLS_2), Safe Direction Indication (forward/backward) (SDI+/-), and Safe Brake Control (SBC).
+- `/wheel_odometry` of type **`swd_ros2_controllers/msg/WheelOdometry`**: Wheel odometry communicated by the wheels via CANOpen, the message includes information about position in mm of the both wheels and distance between the two wheels (baseline) in meters.
 
 ### Custom message types
 
@@ -279,6 +281,17 @@ bool safe_direction_indication_backward     # Safe Direction Indication (negativ
 The main safe drive function is the STO whereby the immediately torque-off on the motor may be accompanied by an SBC command to close the brakes.
 The SLS functions cause the drive to decelerate (if required) and monitor whether the velocity is held within the defined limits.
 The functions SDIp and SDIn enable the motor movement only in the corresponding (positive or negative) direction.
+
+#### `swd_ros2_controllers::msg::WheelOdometry` message
+
+This message provides information about the odometry communicated by the wheels via CANOpen.
+
+```text
+std_msgs/Header header
+float64 left_wheel_position  # Position of the left wheel in mm
+float64 right_wheel_position # Position of the right wheel in mm
+float64 baseline             # Baseline (distance between the two wheels) in meters
+```
 
 ## Support
 

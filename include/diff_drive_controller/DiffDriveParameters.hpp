@@ -29,6 +29,7 @@ constexpr auto DEFAULT_HAVE_BACKWARD_SLS = false;
 constexpr auto DEFAULT_LEFT_RELATIVE_ERROR = 0.2;   // 20% of error
 constexpr auto DEFAULT_RIGHT_RELATIVE_ERROR = 0.2;  // 20% of error
 constexpr auto DEFAULT_ACCURATE_ODOMETRY = false;
+constexpr auto DEFAULT_PUBLISH_WHEEL_ODOMETRY = false;
 
 namespace ezw::swd {
     using namespace std::chrono_literals;
@@ -172,10 +173,16 @@ namespace ezw::swd {
         /**
          * @brief Get the Accurate Odometry flag
          * 
-         * @return true if accurate odometry shal be used
-         * @return false 
+         * @return true if accurate odometry shall be used
          */
         auto getAccurateOdometry() -> bool;
+
+        /**
+         * @brief Get the Publish Wheel Odometry flag
+         * 
+         * @return true if wheel odometry shall be published
+         */
+        auto getPublishWheelOdometry() -> bool;
 
        private:
         rclcpp::Node* m_node;
@@ -188,5 +195,6 @@ namespace ezw::swd {
         float m_left_encoder_relative_error, m_right_encoder_relative_error;
         int m_motor_max_speed_rpm, m_motor_max_sls_1_speed_rpm, m_motor_max_sls_2_speed_rpm, m_motor_max_delta_speed_rpm;
         bool m_accurate_odometry;
+        bool m_publish_wheel_odometry;
     };
 }  // namespace ezw::swd

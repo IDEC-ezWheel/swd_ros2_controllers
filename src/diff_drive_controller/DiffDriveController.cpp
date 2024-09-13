@@ -34,6 +34,7 @@ namespace ezw::swd {
         // Publishers
         if (m_params->getPublishOdom()) {
             m_pub_odom = create_publisher<nav_msgs::msg::Odometry>("odom", 5);
+            m_pub_wheel_odometry = create_publisher<swd_ros2_controllers::msg::WheelOdometry>("wheel_odometry", 5);
         }
 
         if (m_params->getPublishSafety()) {
@@ -510,6 +511,17 @@ namespace ezw::swd {
 
         if (m_params->getPublishOdom()) {
             m_pub_odom->publish(msg_odom);
+        }
+
+        if (m_params->getPublishWheelOdometry()) {
+            auto msg_wheel_odometry = swd_ros2_controllers::msg::WheelOdometry();
+
+            msg_wheel_odometry.header.stamp = timestamp;
+            msg_wheel_odometry.left_wheel_position = left_dist_now_mm;
+            msg_wheel_odometry.right_wheel_position = right_dist_now_mm;
+            msg_wheel_odometry.baseline = m_params->getBaseline();
+
+            m_pub_wheel_odometry->publish(msg_wheel_odometry);
         }
 
         if (m_params->getPublishTf()) {

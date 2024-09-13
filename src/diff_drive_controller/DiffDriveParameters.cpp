@@ -92,6 +92,7 @@ namespace ezw::swd {
             m_node->declare_parameter<double>("right_encoder_relative_error", DEFAULT_RIGHT_RELATIVE_ERROR, descriptor);
         }
         m_node->declare_parameter<bool>("accurate_odometry", DEFAULT_ACCURATE_ODOMETRY);
+        m_node->declare_parameter<bool>("publish_wheel_odometry", DEFAULT_PUBLISH_WHEEL_ODOMETRY);
     }
 
     auto DiffDriveParameters::getBaseline() -> double
@@ -290,6 +291,17 @@ namespace ezw::swd {
             RCLCPP_INFO(m_node->get_logger(), "accurate_odometry : %d", m_accurate_odometry);
         }
         return m_accurate_odometry;
+    }
+
+    auto DiffDriveParameters::getPublishWheelOdometry() -> bool
+    {
+        // Publish Wheel odometry
+        auto l_publish_wheel_odometry = m_publish_wheel_odometry;
+        m_node->get_parameter("publish_wheel_odometry", m_publish_wheel_odometry);
+        if (m_publish_wheel_odometry != l_publish_wheel_odometry) {
+            RCLCPP_INFO(m_node->get_logger(), "publish_wheel_odometry : %d", m_publish_wheel_odometry);
+        }
+        return m_publish_wheel_odometry;
     }
 
 }  // namespace ezw::swd
