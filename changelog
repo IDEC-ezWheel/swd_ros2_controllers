@@ -1,3 +1,10 @@
+swd-ros2-controllers (2.3.0) unstable; urgency=medium
+
+  * EZ-194: Add wheel_odometry topic
+  * EZ-150: Add reset_odometry topic
+
+ -- Grégory Mermet <gregory.mermet@idec.com>  Wed, 18 Sep 2024 10:15:35 +0200
+
 swd-ros2-controllers (2.2.1) unstable; urgency=medium
 
   * EZ-208: Add while loop to wait SWD information at startup
