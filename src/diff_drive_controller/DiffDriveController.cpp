@@ -33,12 +33,12 @@ namespace ezw::swd {
 
         // Publishers
         if (m_params->getPublishOdom()) {
-            m_pub_odom = create_publisher<nav_msgs::msg::Odometry>("odom", 5);
-            m_pub_wheel_odometry = create_publisher<swd_ros2_controllers::msg::WheelOdometry>("wheel_odometry", 5);
+            m_pub_odom = create_publisher<nav_msgs::msg::Odometry>("odom", 1);
+            m_pub_wheel_odometry = create_publisher<swd_ros2_controllers::msg::WheelOdometry>("wheel_odometry", 1);
         }
 
         if (m_params->getPublishSafety()) {
-            m_pub_safety = create_publisher<swd_ros2_controllers::msg::SafetyFunctions>("safety", 5);
+            m_pub_safety = create_publisher<swd_ros2_controllers::msg::SafetyFunctions>("safety", 1);
         }
 
         // Subscribers
