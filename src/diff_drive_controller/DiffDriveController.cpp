@@ -651,11 +651,11 @@ namespace ezw::swd {
             right_vel += abs(saturation);
 
         if (abs(saturation_left) > 0.001) {
-            RCLCPP_INFO(get_logger(), "Left speed saturation : %f rad/s", saturation_left);
+            RCLCPP_DEBUG(get_logger(), "Left speed saturation : %f rad/s", saturation_left);
         }
 
         if (abs(saturation_right) > 0.001) {
-            RCLCPP_INFO(get_logger(), "Right speed saturation : %f rad/s", saturation_right);
+            RCLCPP_DEBUG(get_logger(), "Right speed saturation : %f rad/s", saturation_right);
         }
 
         // left_vel = (2. * p_cmd_vel->linear.x - p_cmd_vel->angular.z * m_baseline_m) / m_left_wheel_diameter_m;
@@ -666,10 +666,10 @@ namespace ezw::swd {
         auto right = static_cast<int32_t>(right_vel * m_r_motor_reduction * 60.0 / (2.0 * M_PI));
 
         if (left_vel < lv) {
-            RCLCPP_INFO(get_logger(), "Left speed desired:%f max:%f vel_rad_s:%f vel_rpm:%d", left_vel, left_max_rad_s, lv, left);
+            RCLCPP_DEBUG(get_logger(), "Left speed desired:%f max:%f vel_rad_s:%f vel_rpm:%d", left_vel, left_max_rad_s, lv, left);
         }
         if (right_vel < rv) {
-            RCLCPP_INFO(get_logger(), "Right speed desired:%f max:%f vel_rad_s:%f vel_rpm:%d", right_vel, right_max_rad_s, rv, right);
+            RCLCPP_DEBUG(get_logger(), "Right speed desired:%f max:%f vel_rad_s:%f vel_rpm:%d", right_vel, right_max_rad_s, rv, right);
         }
 
         // // Control model (diff drive)
