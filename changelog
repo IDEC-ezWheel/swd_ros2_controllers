@@ -1,3 +1,9 @@
+swd-ros2-controllers (2.3.2) unstable; urgency=medium
+
+  * Change some log level messages
+
+ -- Grégory Mermet <gregory.mermet@idec.com>  Wed, 02 Oct 2024 09:09:16 +0000
+
 swd-ros2-controllers (2.3.1) unstable; urgency=medium
 
   * Reduce queue size to 1
