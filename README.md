@@ -64,7 +64,7 @@ In the following instructions, replace `<rosdistro>` with the name of your ROS2 
 source /opt/ros/<rosdistro>/setup.bash
 mkdir -p ~/ros2_ws/src/
 cd ~/ros2_ws/src/
-git clone https://github.com/ezWheelSAS/swd_ros2_controllers.git
+git clone https://github.com/IDEC-ezWheel/swd_ros2_controllers.git
 cd ..
 colcon build
 source ~/ros2_ws/install/setup.bash
@@ -280,7 +280,7 @@ The functions SDIp and SDIn enable the motor movement only in the corresponding 
 
 ## Support
 
-For any questions, [open a GitHub issue](https://github.com/ezWheelSAS/swd_ros2_controllers/issues).
+For any questions, [open a GitHub issue](https://github.com/IDEC-ezWheel/swd_ros2_controllers/issues).
 
 ## About ez-Wheel®
 
