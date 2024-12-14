@@ -752,10 +752,13 @@ namespace ezw::swd {
             max_limited = true;
         }
 
-        // Reading SLS_1/SLS_2
         m_safety_msg_mtx.lock();
+        // Reading SLS_1/SLS_2
         bool sls_1_signal = m_safety_msg.safety_limited_speed_1;
         bool sls_2_signal = m_safety_msg.safety_limited_speed_2;
+        // Reading SDIp/SDIn
+        bool sdi_p_signal = m_safety_msg.safe_direction_indication_forward;
+        bool sdi_n_signal = m_safety_msg.safe_direction_indication_backward;
         m_safety_msg_mtx.unlock();
 
         // If SLS detected, impose the safety limited speed (SLS)
@@ -872,6 +875,12 @@ namespace ezw::swd {
                          "The target speed falls behind the minimum speed limit (left, right) (%d, %d rpm)."
                          "Set speed to (left, right) (%d, %d) rpm",
                          left_speed, right_speed, p_left_speed, p_right_speed);
+        }
+
+        // Is SDIp signal detected during turn in place?
+        if ((sdi_p_signal || sdi_n_signal) && (p_left_speed * p_right_speed < 0)) {
+            p_left_speed = p_right_speed = 0;
+            RCLCPP_DEBUG(get_logger(), "SDI signal detected during turn in place. Setting wheel speeds to (left, right) = (%d, %d) rpm", p_left_speed, p_right_speed);
         }
 
         // If the PDS state is not OPERATION_ENABLED, we send a nil speed.

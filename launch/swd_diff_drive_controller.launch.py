@@ -1,5 +1,5 @@
 ################################################
-## Copyright (C) 2022 ez-Wheel S.A.S.         ##
+## Copyright (C) 2022-2024 ez-Wheel S.A.S.    ##
 ##                                            ##
 ## @file swd_diff_drive_controller.launch.py  ##
 ################################################
@@ -35,6 +35,7 @@ def generate_launch_description():
             DeclareLaunchArgument("motor_max_delta_speed_rpm", default_value="525"),  # motor_max_speed_rpm / 2
             DeclareLaunchArgument("accurate_odometry", default_value="false", description="Use a more precise odometry of the SWD product"),
             DeclareLaunchArgument("publish_wheel_odometry", default_value="false", description="Publish odometry of the both wheels"),
+            DeclareLaunchArgument("check_sdi_during_turn_in_place", default_value="false", description="Check SDI during turn in place"),
             Node(
                 package="swd_ros2_controllers",
                 executable="swd_diff_drive_controller",
@@ -61,6 +62,7 @@ def generate_launch_description():
                     {"left_encoder_relative_error": 0.2},
                     {"right_encoder_relative_error": 0.2},
                     {"accurate_odometry": LaunchConfiguration("accurate_odometry")},
+                    {"check_sdi_during_turn_in_place": LaunchConfiguration("check_sdi_during_turn_in_place")},
                 ],
             ),
         ]

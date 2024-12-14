@@ -1,6 +1,6 @@
 
 /**
- * Copyright (C) 2022 ez-Wheel S.A.S.
+ * Copyright (C) 2022-2024 ez-Wheel S.A.S.
  *
  * @file DiffDriveParameters.cpp
  */
@@ -93,6 +93,7 @@ namespace ezw::swd {
         }
         m_node->declare_parameter<bool>("accurate_odometry", DEFAULT_ACCURATE_ODOMETRY);
         m_node->declare_parameter<bool>("publish_wheel_odometry", DEFAULT_PUBLISH_WHEEL_ODOMETRY);
+        m_node->declare_parameter<bool>("check_sdi_during_turn_in_place", DEFAULT_CHECK_SDI_DURING_TURN_IN_PLACE);
     }
 
     auto DiffDriveParameters::getBaseline() -> double
@@ -302,6 +303,17 @@ namespace ezw::swd {
             RCLCPP_INFO(m_node->get_logger(), "publish_wheel_odometry : %d", m_publish_wheel_odometry);
         }
         return m_publish_wheel_odometry;
+    }
+
+    auto DiffDriveParameters::getCheckSDIDuringTurnInPlace() -> bool
+    {
+        // Check SDI during turn in place
+        auto l_check_sdi_during_turn_in_place = m_check_sdi_during_turn_in_place;
+        m_node->get_parameter("check_sdi_during_turn_in_place", m_check_sdi_during_turn_in_place);
+        if (m_check_sdi_during_turn_in_place != l_check_sdi_during_turn_in_place) {
+            RCLCPP_INFO(m_node->get_logger(), "check_sdi_during_turn_in_place : %d", m_check_sdi_during_turn_in_place);
+        }
+        return m_check_sdi_during_turn_in_place;
     }
 
 }  // namespace ezw::swd

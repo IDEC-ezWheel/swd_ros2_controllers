@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2022 ez-Wheel S.A.S.
+ * Copyright (C) 2022-2024 ez-Wheel S.A.S.
  *
  * @file DiffDriveParameters.hpp
  */
@@ -30,6 +30,7 @@ constexpr auto DEFAULT_LEFT_RELATIVE_ERROR = 0.2;   // 20% of error
 constexpr auto DEFAULT_RIGHT_RELATIVE_ERROR = 0.2;  // 20% of error
 constexpr auto DEFAULT_ACCURATE_ODOMETRY = false;
 constexpr auto DEFAULT_PUBLISH_WHEEL_ODOMETRY = false;
+constexpr auto DEFAULT_CHECK_SDI_DURING_TURN_IN_PLACE = false;
 
 namespace ezw::swd {
     using namespace std::chrono_literals;
@@ -184,6 +185,13 @@ namespace ezw::swd {
          */
         auto getPublishWheelOdometry() -> bool;
 
+        /**
+         * @brief Get the Check SDI during turn in place flag
+         * 
+         * @return true if SDI signal shall be checked during turn in place
+         */
+        auto getCheckSDIDuringTurnInPlace() -> bool;
+
        private:
         rclcpp::Node* m_node;
 
@@ -196,5 +204,6 @@ namespace ezw::swd {
         int m_motor_max_speed_rpm, m_motor_max_sls_1_speed_rpm, m_motor_max_sls_2_speed_rpm, m_motor_max_delta_speed_rpm;
         bool m_accurate_odometry;
         bool m_publish_wheel_odometry;
+        bool m_check_sdi_during_turn_in_place;
     };
 }  // namespace ezw::swd
