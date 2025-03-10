@@ -18,6 +18,9 @@
 #define TIMER_SAFETY_MS 50ms
 #define RETRY_NB 10
 
+// Define threshold for detecting resets
+#define RESET_THRESHOLD_M 0.5  // (adjust based on encoder resolution)
+
 using namespace std::chrono_literals;
 
 namespace ezw::swd {
@@ -448,6 +451,20 @@ namespace ezw::swd {
         double d_dist_left_m = static_cast<double>(left_dist_now_mm - m_dist_left_prev_mm) / 1000.0;
         double d_dist_right_m = static_cast<double>(right_dist_now_mm - m_dist_right_prev_mm) / 1000.0;
 
+        // Detect left encoder reset
+        if (std::abs(d_dist_left_m) > RESET_THRESHOLD_M) {
+            d_dist_left_m = 0.0;                              // Fix distance to avoid jumps
+            m_left_encoder_offset_mm += m_dist_left_prev_mm;  // Inc offset to be continuous after reset
+            RCLCPP_WARN(get_logger(), "Left encoder reset detected!");
+        }
+
+        // Detect right encoder reset
+        if (std::abs(d_dist_right_m) > RESET_THRESHOLD_M) {
+            d_dist_right_m = 0.0;                               // Fix distance to avoid jumps
+            m_right_encoder_offset_mm += m_dist_right_prev_mm;  // Inc offset to be continuous after reset
+            RCLCPP_WARN(get_logger(), "Right encoder reset detected!");
+        }
+
         // Time difference between t and t-1
         auto dt_s = 1.0 / m_params->getPubFreqHz();
         auto left_dt_s = (left_timestamp_us - m_left_timestamp_prev_us) / 1000000.0;
@@ -517,8 +534,8 @@ namespace ezw::swd {
             auto msg_wheel_odometry = swd_ros2_controllers::msg::WheelOdometry();
 
             msg_wheel_odometry.header.stamp = timestamp;
-            msg_wheel_odometry.left_wheel_position = left_dist_now_mm;
-            msg_wheel_odometry.right_wheel_position = right_dist_now_mm;
+            msg_wheel_odometry.left_wheel_position = left_dist_now_mm + m_left_encoder_offset_mm;
+            msg_wheel_odometry.right_wheel_position = right_dist_now_mm + m_right_encoder_offset_mm;
             msg_wheel_odometry.baseline = m_params->getBaseline();
 
             m_pub_wheel_odometry->publish(msg_wheel_odometry);
