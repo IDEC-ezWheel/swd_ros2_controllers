@@ -937,7 +937,7 @@ namespace ezw::swd {
         }
 
         // Is SDIp signal detected during turn in place?
-        if ((sdi_p_signal || sdi_n_signal) && (p_left_speed * p_right_speed < 0)) {
+        if (m_params->getCheckSDIDuringTurnInPlace() && (sdi_p_signal || sdi_n_signal) && (p_left_speed * p_right_speed < 0)) {
             p_left_speed = p_right_speed = 0;
             RCLCPP_DEBUG(get_logger(), "SDI signal detected during turn in place. Setting wheel speeds to (left, right) = (%d, %d) rpm", p_left_speed, p_right_speed);
         }
