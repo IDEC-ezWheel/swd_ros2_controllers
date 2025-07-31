@@ -37,157 +37,157 @@ namespace ezw::swd {
 
     /**
      * @brief This class provides the parameters of the swd_diff_drive_controller node.
-     * 
+     *
      */
     class DiffDriveParameters {
        public:
         /**
          * @brief Construct a new Diff Drive Parameters object
-         * 
+         *
          * @param p_node Diff drive node
          */
         explicit DiffDriveParameters(rclcpp::Node* p_node);
 
         /**
          * @brief Get the Baseline (m)
-         * 
-         * @return double 
+         *
+         * @return double
          */
         auto getBaseline() -> double;
 
         /**
          * @brief Get the Left Config File
-         * 
-         * @return std::string 
+         *
+         * @return std::string
          */
         auto getLeftConfigFile() -> std::string;
 
         /**
          * @brief Get the Right Config File
-         * 
-         * @return std::string 
+         *
+         * @return std::string
          */
         auto getRightConfigFile() -> std::string;
 
         /**
          * @brief Get the Pub Freq (Hz)
-         * 
-         * @return int 
+         *
+         * @return int
          */
         auto getPubFreqHz() -> int;
 
         /**
          * @brief Get the Watchdog Receive (ms)
-         * 
-         * @return int 
+         *
+         * @return int
          */
         auto getWatchdogReceiveMs() -> int;
 
         /**
          * @brief Get the Base Frame
-         * 
-         * @return std::string 
+         *
+         * @return std::string
          */
         auto getBaseFrame() -> std::string;
 
         /**
          * @brief Get the Odom Frame
-         * 
-         * @return std::string 
+         *
+         * @return std::string
          */
         auto getOdomFrame() -> std::string;
 
         /**
          * @brief Get the Publish Odom flag
-         * 
+         *
          * @return true if publish enabled
-         * @return false 
+         * @return false
          */
         auto getPublishOdom() -> bool;
 
         /**
          * @brief Get the Publish Tf
-         * 
+         *
          * @return true if publish enabled
-         * @return false 
+         * @return false
          */
         auto getPublishTf() -> bool;
 
         /**
          * @brief Get the Publish Safety flag
-         * 
+         *
          * @return true if publish enabled
-         * @return false 
+         * @return false
          */
         auto getPublishSafety() -> bool;
 
         /**
          * @brief Get the Have Backward SLS flag
-         * 
+         *
          * @return true if a backward SLS is handled by a LIDAR sensor
-         * @return false 
+         * @return false
          */
         auto getHaveBackwardSls() -> bool;
 
         /**
          * @brief Get the Left Encoder Relative Error
-         * 
-         * @return float 
+         *
+         * @return float
          */
         auto getLeftEncoderRelativeError() -> float;
 
         /**
          * @brief Get the Right Encoder Relative Error
-         * 
-         * @return float 
+         *
+         * @return float
          */
         auto getRightEncoderRelativeError() -> float;
 
         /**
          * @brief Get the Motor Max Speed Rpm
-         * 
-         * @return int 
+         *
+         * @return int
          */
         auto getMotorMaxSpeedRpm() -> int;
 
         /**
          * @brief Get the Motor Max SLS_1 Speed Rpm
-         * 
-         * @return int 
+         *
+         * @return int
          */
         auto getMotorMaxSls1SpeedRpm() -> int;
 
         /**
          * @brief Get the Motor Max SLS_2 Speed Rpm
-         * 
-         * @return int 
+         *
+         * @return int
          */
         auto getMotorMaxSls2SpeedRpm() -> int;
 
         /**
          * @brief Get the Motor Max Delta Speed Rpm betwwen the both motors
-         * 
-         * @return int 
+         *
+         * @return int
          */
         auto getMotorMaxDeltaSpeedRpm() -> int;
 
         /**
          * @brief Get the Accurate Odometry flag
-         * 
+         *
          * @return true if accurate odometry shall be used
          */
         auto getAccurateOdometry() -> bool;
 
         /**
          * @brief Get the Publish Wheel Odometry flag
-         * 
+         *
          * @return true if wheel odometry shall be published
          */
         auto getPublishWheelOdometry() -> bool;
 
         /**
          * @brief Get the Check SDI during turn in place flag
-         * 
+         *
          * @return true if SDI signal shall be checked during turn in place
          */
         auto getCheckSDIDuringTurnInPlace() -> bool;

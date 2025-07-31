@@ -38,74 +38,74 @@
 namespace ezw::swd {
 
     /**
-         * @brief Differential Drive Controller for ez-Wheel Safety Wheel Drive.
-         * It subscribes to the `/set_speed` or `/cmd_vel` or `/soft_brake` topics:
-         * - `/set_speed` of type `geometry_msgs::msg::Point`: the `x` and `y` represent respectively the left and right motor speed in (rad/s)
-         * - `/cmd_vel` of type `geometry_msgs::msg::Twist`: The linear and angular velocities
-         * - `/soft_brake` of type `std_msgs::msg::Bool`: To active or release the soft brake.
-         * It publishes :
-         * - the odometry to `/odom`, type `nav_msgs::msg::Odometry` and the associated TFs
-         * - the safety functions to `/safety`, type `swd_ros2_controllers::msg::SafetyFunctions`.
-        **/
+     * @brief Differential Drive Controller for ez-Wheel Safety Wheel Drive.
+     * It subscribes to the `/set_speed` or `/cmd_vel` or `/soft_brake` topics:
+     * - `/set_speed` of type `geometry_msgs::msg::Point`: the `x` and `y` represent respectively the left and right motor speed in (rad/s)
+     * - `/cmd_vel` of type `geometry_msgs::msg::Twist`: The linear and angular velocities
+     * - `/soft_brake` of type `std_msgs::msg::Bool`: To active or release the soft brake.
+     * It publishes :
+     * - the odometry to `/odom`, type `nav_msgs::msg::Odometry` and the associated TFs
+     * - the safety functions to `/safety`, type `swd_ros2_controllers::msg::SafetyFunctions`.
+     **/
     class DiffDriveController : public rclcpp::Node {
        public:
         /**
          * @brief Construct a new Diff Drive Controller object
-         * 
+         *
          * @param p_node_name Node name
          */
         explicit DiffDriveController(const std::string &p_node_name);
 
         /**
          * @brief Destroy the Diff Drive Controller object
-         * 
+         *
          */
         virtual ~DiffDriveController();
 
        private:
         /**
          * @brief Callback for State Machine timer
-         * 
+         *
          */
         void cbTimerStateMachine();
 
         /**
          * @brief Callback for SoftBrake
-         * 
+         *
          */
         void cbSoftBrake(const std_msgs::msg::Bool::SharedPtr p_msg);
 
         /**
          * @brief Callback for Odom timer
-         * 
+         *
          */
         void cbTimerOdom();
 
         /**
          * @brief Change wheel speed (msg.x = left wheel, msg.y = right wheel) [rad/s]
-         * 
-         * @param p_speed 
+         *
+         * @param p_speed
          */
         void cbSetSpeed(const geometry_msgs::msg::Point::SharedPtr p_speed);
 
         /**
          * @brief Change robot velocity (linear [m/s], angular [rad/s])
-         * 
-         * @param p_cmd_vel 
+         *
+         * @param p_cmd_vel
          */
         void cbCmdVel(geometry_msgs::msg::Twist::SharedPtr p_cmd_vel);
 
         /**
          * @brief Change robot velocity (left in rpm, right in rpm)
-         * 
-         * @param left_speed 
-         * @param right_speed 
+         *
+         * @param left_speed
+         * @param right_speed
          */
         void setSpeeds(int32_t p_left_speed, int32_t p_right_speed);
 
         /**
          * @brief Callback for Safety timer
-         * 
+         *
          */
         void cbTimerSafety();
 
@@ -119,7 +119,7 @@ namespace ezw::swd {
         /**
          * @brief A safety callback which gets activated if no control message
          * have been received since `control_timeout_ms`
-         * 
+         *
          */
         void cbTimerWatchdogReceive();
 
