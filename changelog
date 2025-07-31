@@ -1,3 +1,10 @@
+swd-ros2-controllers (2.5.1) unstable; urgency=medium
+
+  * Bump clang-format from 11 to 15
+  * EZ-899: Use CheckSDIDuringTurnInPlace when turn in place
+
+ -- Grégory Mermet <gregory.mermet@idec.com>  Thu, 31 Jul 2025 13:43:22 +0000
+
 swd-ros2-controllers (2.5.0) unstable; urgency=medium
 
   * EZ-661: Add motor reset detection
