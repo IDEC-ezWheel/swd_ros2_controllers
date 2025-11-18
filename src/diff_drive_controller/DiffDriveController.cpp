@@ -937,10 +937,16 @@ namespace ezw::swd {
         }
 
         // Is SDIp signal detected during turn in place?
+        auto sdi_during_turn_in_place = false;
         if (m_params->getCheckSDIDuringTurnInPlace() && (sdi_p_signal || sdi_n_signal) && (p_left_speed * p_right_speed < 0)) {
             p_left_speed = p_right_speed = 0;
             RCLCPP_DEBUG(get_logger(), "SDI signal detected during turn in place. Setting wheel speeds to (left, right) = (%d, %d) rpm", p_left_speed, p_right_speed);
+            sdi_during_turn_in_place = true;
         }
+
+        m_safety_msg_mtx.lock();
+        m_safety_msg.sdi_during_turn_in_place = sdi_during_turn_in_place;
+        m_safety_msg_mtx.unlock();
 
         // If the PDS state is not OPERATION_ENABLED, we send a nil speed.
         if (!m_pds_ok) {
@@ -1094,6 +1100,7 @@ namespace ezw::swd {
 #endif
 
         m_safety_msg_mtx.lock();
+        msg.sdi_during_turn_in_place = m_safety_msg.sdi_during_turn_in_place;
         m_safety_msg = msg;
         m_safety_msg_mtx.unlock();
 
