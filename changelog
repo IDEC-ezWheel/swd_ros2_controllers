@@ -1,3 +1,9 @@
+swd-ros2-controllers (2.6.0) unstable; urgency=medium
+
+  * EZ-1058: Add sdi_during_turn_in_place into safety message
+
+ -- Grégory Mermet <gregory.mermet@idec.com>  Wed, 03 Dec 2025 10:37:53 +0000
+
 swd-ros2-controllers (2.5.1) unstable; urgency=medium
 
   * Bump clang-format from 11 to 15
