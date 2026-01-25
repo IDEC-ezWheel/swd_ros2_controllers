@@ -14,6 +14,7 @@ Checks: >
   -readability-magic-numbers,
   -readability-function-cognitive-complexity,
   -readability-isolate-declaration,
+  -misc-include-cleaner,
 
 # Turn all the warnings from the checks above into errors.
 #WarningsAsErrors: "*"

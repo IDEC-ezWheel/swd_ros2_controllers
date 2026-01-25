@@ -4,12 +4,14 @@
  * @file main.cpp
  */
 
-#include "cstdio"
+#include <cstdio>
+#include <rclcpp/rclcpp.hpp>
+
 #include "diff_drive_controller/DiffDriveController.hpp"
 
 auto main(int argc, char** argv) -> int
 {
-    // force flush of the stdout buffer.
+    // Force flush of the stdout buffer.
     // this ensures a correct sync of all prints
     // even when executed simultaneously within the launch file.
     setvbuf(stdout, nullptr, _IONBF, BUFSIZ);

@@ -33,7 +33,7 @@
 #define M_MAX(a, b) ((a) > (b) ? (a) : (b))
 #define M_MIN(a, b) ((a) < (b) ? (a) : (b))
 #define M_SIGN(a) ((a) > 0 ? 1 : -1)
-#define M_BOUND_ANGLE(a) (((a) > M_PI) ? ((a)-2. * M_PI) : (((a) < -M_PI) ? ((a) + 2. * M_PI) : (a)))
+#define M_BOUND_ANGLE(a) (((a) > M_PI) ? ((a) - 2. * M_PI) : (((a) < -M_PI) ? ((a) + 2. * M_PI) : (a)))
 
 namespace ezw::swd {
 

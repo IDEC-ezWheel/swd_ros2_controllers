@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.5)
 project(swd_ros2_controllers)
 
 # Default to C++17
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 17)
-endif()
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -52,13 +52,17 @@ message(STATUS "Pkgconfig extra path are: $ENV{PKG_CONFIG_PATH} ")
 # ------------------------------------------------------------------------------
 find_package(PkgConfig REQUIRED)
 
-# ############
-# # Clang ##
-# ############
-
-# Allow Clang-tidy
-# set(CMAKE_CXX_CLANG_TIDY clang-tidy-12 --config-file=${CMAKE_SOURCE_DIR}/.clang-tidy --use-color --header-filter=${CMAKE_SOURCE_DIR}/include/)
-# set(DCMAKE_EXPORT_COMPILE_COMMANDS ON)
+# Linter
+option(USE_CLANG_TIDY "Run clang-tidy during build" OFF)
+if(USE_CLANG_TIDY)
+  find_program(CLANG_TIDY_EXE NAMES clang-tidy)
+  if (CLANG_TIDY_EXE)   
+    execute_process(COMMAND ${CLANG_TIDY_EXE} --version OUTPUT_VARIABLE CLANG_TIDY_VERSION_RAW OUTPUT_STRIP_TRAILING_WHITESPACE)
+    string(REGEX REPLACE "\n.*" "" CLANG_TIDY_VERSION "${CLANG_TIDY_VERSION_RAW}")
+    message(STATUS "Found clang-tidy: ${CLANG_TIDY_EXE} (${CLANG_TIDY_VERSION})")
+    set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE};--config-file=${CMAKE_SOURCE_DIR}/.clang-tidy;--use-color")
+  endif()
+endif()
 
 # ------------------------------------------------------------------------------
 # Project configuration
@@ -79,9 +83,9 @@ pkg_check_modules(EZW_SMC_SERVICE_CLIENT REQUIRED ezw-smc-service-client)
 
 # Add include dirs. The case not configured will be empty
 include_directories(
-  ${EZW_TYPES_INCLUDE_DIRS}
-  ${EZW_LOG_INCLUDE_DIRS}
-  ${EZW_SMC_SERVICE_CLIENT_INCLUDE_DIRS}
+  SYSTEM ${EZW_TYPES_INCLUDE_DIRS}
+  SYSTEM ${EZW_LOG_INCLUDE_DIRS}
+  SYSTEM ${EZW_SMC_SERVICE_CLIENT_INCLUDE_DIRS}
 )
 
 # Add library dirs. The case not configured will be empty
