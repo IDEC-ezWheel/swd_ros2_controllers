@@ -1,3 +1,9 @@
+swd-ros2-controllers (2.6.1) unstable; urgency=medium
+
+  * Fix clang-tidy detection
+
+ -- Grégory Mermet <gregory.mermet@idec.com>  Fri, 27 Feb 2026 15:45:14 +0000
+
 swd-ros2-controllers (2.6.0) unstable; urgency=medium
 
   * EZ-1058: Add sdi_during_turn_in_place into safety message
