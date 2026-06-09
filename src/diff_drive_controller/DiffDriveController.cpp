@@ -731,7 +731,7 @@ namespace ezw::swd {
         }
 
         double _left_vel = 1.0 * (left_speed / m_l_motor_reduction / 60.0 * (2.0 * M_PI));
-        double _right_vel = 1.0 * (right_speed / m_l_motor_reduction / 60.0 * (2.0 * M_PI));
+        double _right_vel = 1.0 * (right_speed / m_r_motor_reduction / 60.0 * (2.0 * M_PI));
 
         double x = 0.5 * ((_left_vel + _right_vel) * m_left_wheel_diameter_m / (4 * m_params->getBaseline()));
         double z = 1.0 * ((_right_vel - _left_vel) * m_left_wheel_diameter_m / (2 * m_params->getBaseline()));
