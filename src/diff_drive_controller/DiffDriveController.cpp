@@ -282,53 +282,11 @@ namespace ezw::swd {
     void DiffDriveController::cbTimerStateMachine()
     {
         static bool m_first_entry = true;
-        ezw_error_t err_l, err_r;
-
-        // PDOs initialization
-        bool lIsConnected = false;
-        bool lIsPdoInitSucceeded = false;
-        err_l = m_left_controller.getConnectionStatus(lIsConnected, lIsPdoInitSucceeded);
-        if (ERROR_NONE != err_l) {
-            RCLCPP_ERROR(get_logger(),
-                         "Failed to get connection status, EZW_ERR: SMCService : "
-                         "Controller.getConnectionStatus() return error code : %d",
-                         (int)err_l);
-        }
-
-        if (lIsPdoInitSucceeded == false) {
-            RCLCPP_WARN(get_logger(),
-                        "Left motor PDOs are not initialized, trying to initialize them again");
-            err_l = m_left_controller.initializePdo();
-            if (ERROR_NONE != err_l) {
-                RCLCPP_ERROR(get_logger(),
-                             "Failed to initialize left motor PDOs, EZW_ERR: SMCService : "
-                             "Controller.initializePdo() return error code : %d",
-                             (int)err_l);
-            }
-        }
-
-        err_r = m_right_controller.getConnectionStatus(lIsConnected, lIsPdoInitSucceeded);
-        if (ERROR_NONE != err_r) {
-            RCLCPP_ERROR(get_logger(),
-                         "Failed to get connection status, EZW_ERR: SMCService : "
-                         "Controller.getConnectionStatus() return error code : %d",
-                         (int)err_r);
-        }
-        if (lIsPdoInitSucceeded == false) {
-            RCLCPP_WARN(get_logger(),
-                        "Right motor PDOs are not initialized, trying to initialize them again");
-            err_r = m_right_controller.initializePdo();
-            if (ERROR_NONE != err_r) {
-                RCLCPP_ERROR(get_logger(),
-                             "Failed to initialize right motor PDOs, EZW_ERR: SMCService : "
-                             "Controller.initializePdo() return error code : %d",
-                             (int)err_r);
-            }
-        }
 
         // NMT state machine
         smccore::INMTService::NMTState nmt_state_l, nmt_state_r;
         smccore::IPDSService::PDSState pds_state_l, pds_state_r;
+        ezw_error_t err_l, err_r;
 
         pds_state_l = pds_state_r = smccore::IPDSService::PDSState::SWITCH_ON_DISABLED;
 
