@@ -163,6 +163,6 @@ namespace ezw::swd {
 
         ezw::smcservice::DBusClient m_left_controller, m_right_controller;
 
-        std::map<ezw::smccore::ISafeMotionService::SafetyFunctionId, int8_t> m_left_safety_functions, m_right_safety_functions;
+        std::multimap<ezw::smccore::ISafeMotionService::SafetyFunctionId, int8_t> m_left_safety_functions, m_right_safety_functions;
     };
 }  // namespace ezw::swd

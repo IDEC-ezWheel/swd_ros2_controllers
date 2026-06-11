@@ -236,12 +236,14 @@ namespace ezw::swd {
                          (int)err);
             throw std::runtime_error("Failed reading the right motor SAFEIN_1 mapping");
         }
-        m_right_safety_functions[safety_control_word_mapping.safety_function_0] = 0;
-        m_right_safety_functions[safety_control_word_mapping.safety_function_1] = 1;
-        m_right_safety_functions[safety_control_word_mapping.safety_function_2] = 2;
-        m_right_safety_functions[safety_control_word_mapping.safety_function_3] = 3;
-        m_right_safety_functions[safety_control_word_mapping.safety_function_4] = 4;
-        m_right_safety_functions[safety_control_word_mapping.safety_function_5] = 5;
+        m_right_safety_functions = {
+            {safety_control_word_mapping.safety_function_0, 0},
+            {safety_control_word_mapping.safety_function_1, 1},
+            {safety_control_word_mapping.safety_function_2, 2},
+            {safety_control_word_mapping.safety_function_3, 3},
+            {safety_control_word_mapping.safety_function_4, 4},
+            {safety_control_word_mapping.safety_function_5, 5},
+        };
 
         err = m_left_controller.getSafetyControlWordMapping(ezw::smccore::ISafeMotionService::SafetyControlWordId::SAFEIN_1, safety_control_word_mapping);
         if (ERROR_NONE != err) {
@@ -251,12 +253,14 @@ namespace ezw::swd {
                          (int)err);
             throw std::runtime_error("Failed reading the left motor SAFEIN_1 mapping");
         }
-        m_left_safety_functions[safety_control_word_mapping.safety_function_0] = 0;
-        m_left_safety_functions[safety_control_word_mapping.safety_function_1] = 1;
-        m_left_safety_functions[safety_control_word_mapping.safety_function_2] = 2;
-        m_left_safety_functions[safety_control_word_mapping.safety_function_3] = 3;
-        m_left_safety_functions[safety_control_word_mapping.safety_function_4] = 4;
-        m_left_safety_functions[safety_control_word_mapping.safety_function_5] = 5;
+        m_left_safety_functions = {
+            {safety_control_word_mapping.safety_function_0, 0},
+            {safety_control_word_mapping.safety_function_1, 1},
+            {safety_control_word_mapping.safety_function_2, 2},
+            {safety_control_word_mapping.safety_function_3, 3},
+            {safety_control_word_mapping.safety_function_4, 4},
+            {safety_control_word_mapping.safety_function_5, 5},
+        };
 
         // Start the timers
         m_timer_watchdog = create_wall_timer(std::chrono::milliseconds(m_params->getWatchdogReceiveMs()), std::bind(&DiffDriveController::cbTimerWatchdogReceive, this));
@@ -986,9 +990,45 @@ namespace ezw::swd {
         safein1_r[4] = safety_control_word.safety_function_4;
         safein1_r[5] = safety_control_word.safety_function_5;
 
+        /**
+         * @brief Retrieve the status of safety inputs of the specified safety function id from the left SWD.
+         *
+         * @param id Id of the safety function.
+         *
+         * @return false if any one of them is false, otherwise true.
+         */
+        auto getLeftSafetyValue = [this, &safein1_l](ezw::smccore::ISafeMotionService::SafetyFunctionId id) {
+            auto indexes = m_left_safety_functions.equal_range(id);
+            for (auto it = indexes.first; it != indexes.second; it++) {
+                if (safein1_l[it->second] == false) {
+                    return false;
+                }
+            }
+
+            return true;
+        };
+
+        /**
+         * @brief Retrieve the status of safety inputs of the specified safety function id from the right SWD.
+         *
+         * @param id Id of the safety function.
+         *
+         * @return false if any one of them is false, otherwise true.
+         */
+        auto getRightSafetyValue = [this, &safein1_r](ezw::smccore::ISafeMotionService::SafetyFunctionId id) {
+            auto indexes = m_right_safety_functions.equal_range(id);
+            for (auto it = indexes.first; it != indexes.second; it++) {
+                if (safein1_r[it->second] == false) {
+                    return false;
+                }
+            }
+
+            return true;
+        };
+
         // Reading SBC
-        res_l = m_left_safety_functions.count(ezw::smccore::ISafeMotionService::SafetyFunctionId::SBC_1) ? safein1_l[m_left_safety_functions[ezw::smccore::ISafeMotionService::SafetyFunctionId::SBC_1]] : true;
-        res_r = m_right_safety_functions.count(ezw::smccore::ISafeMotionService::SafetyFunctionId::SBC_1) ? safein1_r[m_right_safety_functions[ezw::smccore::ISafeMotionService::SafetyFunctionId::SBC_1]] : true;
+        res_l = getLeftSafetyValue(ezw::smccore::ISafeMotionService::SafetyFunctionId::SBC_1);
+        res_r = getRightSafetyValue(ezw::smccore::ISafeMotionService::SafetyFunctionId::SBC_1);
 
         msg.safe_brake_control = static_cast<uint8_t>(!res_l || !res_r);
         if (m_first_entry || msg.safe_brake_control != m_safety_msg.safe_brake_control) {
@@ -996,8 +1036,8 @@ namespace ezw::swd {
         }
 
         // Reading STO
-        res_l = m_left_safety_functions.count(ezw::smccore::ISafeMotionService::SafetyFunctionId::STO) ? safein1_l[m_left_safety_functions[ezw::smccore::ISafeMotionService::SafetyFunctionId::STO]] : true;
-        res_r = m_right_safety_functions.count(ezw::smccore::ISafeMotionService::SafetyFunctionId::STO) ? safein1_r[m_right_safety_functions[ezw::smccore::ISafeMotionService::SafetyFunctionId::STO]] : true;
+        res_l = getLeftSafetyValue(ezw::smccore::ISafeMotionService::SafetyFunctionId::STO);
+        res_r = getRightSafetyValue(ezw::smccore::ISafeMotionService::SafetyFunctionId::STO);
 
         msg.safe_torque_off = static_cast<uint8_t>(!res_l || !res_r);
         if (m_first_entry || msg.safe_torque_off != m_safety_msg.safe_torque_off) {
@@ -1007,11 +1047,11 @@ namespace ezw::swd {
         // Reading SDI
         bool sdi_l_p, sdi_l_n, sdi_r_p, sdi_r_n, sdi_p, sdi_n;
 
-        sdi_l_p = m_left_safety_functions.count(ezw::smccore::ISafeMotionService::SafetyFunctionId::SDIP_1) ? safein1_l[m_left_safety_functions[ezw::smccore::ISafeMotionService::SafetyFunctionId::SDIP_1]] : true;
-        sdi_r_p = m_right_safety_functions.count(ezw::smccore::ISafeMotionService::SafetyFunctionId::SDIP_1) ? safein1_r[m_right_safety_functions[ezw::smccore::ISafeMotionService::SafetyFunctionId::SDIP_1]] : true;
+        sdi_l_p = getLeftSafetyValue(ezw::smccore::ISafeMotionService::SafetyFunctionId::SDIP_1);
+        sdi_r_p = getRightSafetyValue(ezw::smccore::ISafeMotionService::SafetyFunctionId::SDIP_1);
 
-        sdi_l_n = m_left_safety_functions.count(ezw::smccore::ISafeMotionService::SafetyFunctionId::SDIN_1) ? safein1_l[m_left_safety_functions[ezw::smccore::ISafeMotionService::SafetyFunctionId::SDIN_1]] : true;
-        sdi_r_n = m_right_safety_functions.count(ezw::smccore::ISafeMotionService::SafetyFunctionId::SDIN_1) ? safein1_r[m_right_safety_functions[ezw::smccore::ISafeMotionService::SafetyFunctionId::SDIN_1]] : true;
+        sdi_l_n = getLeftSafetyValue(ezw::smccore::ISafeMotionService::SafetyFunctionId::SDIN_1);
+        sdi_r_n = getRightSafetyValue(ezw::smccore::ISafeMotionService::SafetyFunctionId::SDIN_1);
 
         if (m_left_motor_polarity) {
             sdi_p = !sdi_l_n || !sdi_r_p;
@@ -1036,8 +1076,8 @@ namespace ezw::swd {
         // Reading SLS_1
         // When an object is detected in the SLS area, res_r and res_l will be false.
         // If both or either res_l or res_r are false, set safety_limited_speed to true.
-        res_l = m_left_safety_functions.count(ezw::smccore::ISafeMotionService::SafetyFunctionId::SLS_1) ? safein1_l[m_left_safety_functions[ezw::smccore::ISafeMotionService::SafetyFunctionId::SLS_1]] : true;
-        res_r = m_right_safety_functions.count(ezw::smccore::ISafeMotionService::SafetyFunctionId::SLS_1) ? safein1_r[m_right_safety_functions[ezw::smccore::ISafeMotionService::SafetyFunctionId::SLS_1]] : true;
+        res_l = getLeftSafetyValue(ezw::smccore::ISafeMotionService::SafetyFunctionId::SLS_1);
+        res_r = getRightSafetyValue(ezw::smccore::ISafeMotionService::SafetyFunctionId::SLS_1);
 
         msg.safety_limited_speed_1 = static_cast<uint8_t>(!res_l || !res_r);
         if (m_first_entry || msg.safety_limited_speed_1 != m_safety_msg.safety_limited_speed_1) {
@@ -1045,8 +1085,8 @@ namespace ezw::swd {
         }
 
         // Reading SLS_2
-        res_l = m_left_safety_functions.count(ezw::smccore::ISafeMotionService::SafetyFunctionId::SLS_2) ? safein1_l[m_left_safety_functions[ezw::smccore::ISafeMotionService::SafetyFunctionId::SLS_2]] : true;
-        res_r = m_right_safety_functions.count(ezw::smccore::ISafeMotionService::SafetyFunctionId::SLS_2) ? safein1_r[m_right_safety_functions[ezw::smccore::ISafeMotionService::SafetyFunctionId::SLS_2]] : true;
+        res_l = getLeftSafetyValue(ezw::smccore::ISafeMotionService::SafetyFunctionId::SLS_2);
+        res_r = getRightSafetyValue(ezw::smccore::ISafeMotionService::SafetyFunctionId::SLS_2);
 
         msg.safety_limited_speed_2 = static_cast<uint8_t>(!res_l || !res_r);
         if (m_first_entry || msg.safety_limited_speed_2 != m_safety_msg.safety_limited_speed_2) {
