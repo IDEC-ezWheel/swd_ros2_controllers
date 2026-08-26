@@ -48,7 +48,7 @@ def generate_launch_description():
                     {"right_swd_config_file": "/opt/ezw/usr/etc/ezw-smc-core/swd_right_config.ini"},
                     {"pub_freq_hz": 20},
                     {"watchdog_receive_ms": 500},
-                    {"base_frame": "base_link"},
+                    {"base_frame": "base_footprint"},
                     {"odom_frame": "odom"},
                     {"publish_odom": True},
                     {"publish_wheel_odometry": LaunchConfiguration("publish_wheel_odometry")},
